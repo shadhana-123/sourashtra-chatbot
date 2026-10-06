@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sourashtra Chatbot – English ↔ Sourashtra Translator</title>
+  <meta name="description" content="Interactive Sourashtra language chatbot. Type or speak in English, get Sourashtra translations with voice output. Practice your Sourashtra pronunciation!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated background particles -->
+  <div class="particles" id="particles"></div>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+  <div class="bg-glow glow-3"></div>
+
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-icon">𑍐</div>
+        <div class="logo-text">
+          <h1>Sourashtra <span class="gradient-text">Chatbot</span></h1>
+          <p class="tagline">Learn · Speak · Explore the Sourashtra Language</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        <span>Live Translator</span>
+      </div>
+    </header>
+
+    <!-- Mode Selector Tabs -->
+    <div class="mode-tabs" role="tablist">
+      <button class="mode-tab active" id="tab-type" data-mode="type" role="tab" aria-selected="true" onclick="switchMode('type')">
+        <span class="tab-icon">⌨️</span>
+        <span class="tab-label">Type to Translate</span>
+      </button>
+      <button class="mode-tab" id="tab-speak-en" data-mode="speak-en" role="tab" aria-selected="false" onclick="switchMode('speak-en')">
+        <span class="tab-icon">🎙️</span>
+        <span class="tab-label">Speak English</span>
+      </button>
+      <button class="mode-tab" id="tab-practice" data-mode="practice" role="tab" aria-selected="false" onclick="switchMode('practice')">
+        <span class="tab-icon">🗣️</span>
+        <span class="tab-label">Practice Sourashtra</span>
+      </button>
+    </div>
+
+    <!-- Main Chat Area -->
+    <main class="main-content">
+      <!-- ============ MODE 1: TYPE TO TRANSLATE ============ -->
+      <section class="mode-panel active" id="panel-type">
+        <div class="search-container">
+          <div class="search-bar-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Type an English word (e.g. water, mother, one…)"
+              autocomplete="off"
+              oninput="handleSearch()"
+              onkeydown="handleKeyDown(event)"
+            />
+            <button class="clear-btn" id="clear-btn" onclick="clearSearch()" aria-label="Clear search">✕</button>
+          </div>
+          <div class="suggestions-dropdown" id="suggestions-dropdown"></div>
+        </div>
+
+        <div class="chat-feed" id="chat-feed">
+          <div class="welcome-message">
+            <div class="welcome-icon">𑍐</div>
+            <h2>Welcome to Sourashtra Chatbot!</h2>
+            <p>Type any English word above to find its Sourashtra translation. Click the <strong>🔊 Speaker</strong> button to hear the Sourashtra pronunciation.</p>
+            <div class="category-chips">
+              <span class="chip" onclick="quickSearch('water')">water</span>
+              <span class="chip" onclick="quickSearch('mother')">mother</span>
+              <span class="chip" onclick="quickSearch('one')">one</span>
+              <span class="chip" onclick="quickSearch('eye')">eye</span>
+              <span class="chip" onclick="quickSearch('cow')">cow</span>
+              <span class="chip" onclick="quickSearch('hello')">hello</span>
+              <span class="chip" onclick="quickSearch('sun')">sun</span>
+              <span class="chip" onclick="quickSearch('mango')">mango</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Browser -->
+        <div class="category-browser">
+          <h3 class="section-title">Browse by Category</h3>
+          <div class="category-grid" id="category-grid">
+            <button class="cat-btn active" onclick="filterCategory('all')">🌐 All</button>
+            <button class="cat-btn" onclick="filterCategory('greetings')">👋 Greetings</button>
+            <button class="cat-btn" onclick="filterCategory('numbers')">🔢 Numbers</button>
+            <button class="cat-btn" onclick="filterCategory('body')">🫀 Body Parts</button>
+            <button class="cat-btn" onclick="filterCategory('family')">👨‍👩‍👧 Family</button>
+            <button class="cat-btn" onclick="filterCategory('animals')">🐄 Animals</button>
+            <button class="cat-btn" onclick="filterCategory('food')">🍎 Food</button>
+            <button class="cat-btn" onclick="filterCategory('nature')">🌿 Nature</button>
+            <button class="cat-btn" onclick="filterCategory('colors')">🎨 Colors</button>
+            <button class="cat-btn" onclick="filterCategory('actions')">⚡ Actions</button>
+            <button class="cat-btn" onclick="filterCategory('time')">⏰ Time</button>
+            <button class="cat-btn" onclick="filterCategory('places')">📍 Places</button>
+          </div>
+          <div class="word-grid" id="word-grid"></div>
+        </div>
+      </section>
+
+      <!-- ============ MODE 2: SPEAK ENGLISH ============ -->
+      <section class="mode-panel" id="panel-speak-en">
+        <div class="speak-container">
+          <div class="speak-hero">
+            <div class="mic-ring" id="mic-ring">
+              <button class="mic-btn" id="mic-btn-en" onclick="toggleSpeechEn()" aria-label="Start listening">
+                <span class="mic-icon" id="mic-icon-en">🎙️</span>
+              </button>
+            </div>
+            <p class="speak-instruction" id="speak-instruction-en">Tap the microphone and <strong>speak in English</strong></p>
+            <div class="listening-waves" id="listening-waves-en">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="recognized-text-box" id="recognized-box-en" style="display:none">
+            <div class="rtb-label">You said (English):</div>
+            <div class="rtb-text" id="recognized-en-text"></div>
+          </div>
+
+          <div class="translation-result-box" id="translation-box-en" style="display:none">
+            <div class="trb-header">
+              <span class="trb-lang-badge">Sourashtra</span>
+              <button class="speak-result-btn" id="speak-result-en" onclick="speakSourashtra('en')" aria-label="Hear Sourashtra">
+                🔊 Hear in Sourashtra
+              </button>
+            </div>
+            <div class="trb-sourashtra" id="trb-sourashtra-en"></div>
+            <div class="trb-script" id="trb-script-en"></div>
+            <div class="trb-category" id="trb-category-en"></div>
+          </div>
+
+          <div class="no-match-box" id="no-match-en" style="display:none">
+            <span>😕</span>
+            <p>Word not found in dictionary. Try another word!</p>
+          </div>
+        </div>
+
+        <div class="history-section" id="history-en">
+          <h3 class="section-title">Recent Translations</h3>
+          <div class="history-list" id="history-list-en"></div>
+        </div>
+      </section>
+
+      <!-- ============ MODE 3: PRACTICE SOURASHTRA ============ -->
+      <section class="mode-panel" id="panel-practice">
+        <div class="practice-container">
+          <div class="practice-card" id="practice-word-card">
+            <div class="practice-prompt">Say this word in Sourashtra:</div>
+            <div class="practice-english" id="practice-english-word">—</div>
+            <div class="practice-sourashtra" id="practice-sourashtra-hint"></div>
+            <button class="hint-btn" id="hint-toggle" onclick="toggleHint()">👁️ Show Hint</button>
+          </div>
+
+          <div class="speak-hero">
+            <div class="mic-ring" id="mic-ring-practice">
+              <button class="mic-btn" id="mic-btn-practice" onclick="toggleSpeechPractice()" aria-label="Start practice">
+                <span class="mic-icon" id="mic-icon-practice">🎙️</span>
+              </button>
+            </div>
+            <p class="speak-instruction" id="speak-instruction-practice">Tap to speak the Sourashtra word</p>
+            <div class="listening-waves" id="listening-waves-practice">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="score-box" id="score-box" style="display:none">
+            <div class="score-header">Pronunciation Score</div>
+            <div class="score-circle" id="score-circle">
+              <svg viewBox="0 0 120 120">
+                <circle class="score-bg" cx="60" cy="60" r="54"/>
+                <circle class="score-fill" id="score-fill" cx="60" cy="60" r="54" stroke-dasharray="339" stroke-dashoffset="339"/>
+              </svg>
+              <div class="score-num" id="score-num">0%</div>
+            </div>
+            <div class="score-message" id="score-message"></div>
+            <div class="score-details" id="score-details"></div>
+            <div class="score-actions">
+              <button class="action-btn secondary" onclick="retryPractice()">🔄 Try Again</button>
+              <button class="action-btn primary" onclick="nextPracticeWord()">➡️ Next Word</button>
+            </div>
+          </div>
+
+          <div class="practice-controls">
+            <button class="action-btn secondary" onclick="prevPracticeWord()">⬅️ Previous</button>
+            <span class="practice-counter" id="practice-counter">1 / 20</span>
+            <button class="action-btn secondary" onclick="nextPracticeWord()">Next ➡️</button>
+          </div>
+
+          <div class="practice-stats">
+            <div class="stat-card">
+              <div class="stat-val" id="stat-attempts">0</div>
+              <div class="stat-label">Attempts</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-correct">0</div>
+              <div class="stat-label">Good</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-avg">—</div>
+              <div class="stat-label">Avg Score</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Sourashtra (𑍐) · An Indo-Aryan language spoken in Tamil Nadu, India</p>
+      <p>Voice powered by Web Speech API · Dictionary sourced from community resources</p>
+    </footer>
+  </div>
+
+  <!-- Result Card Template (used dynamically) -->
+  <template id="result-card-tpl">
+    <div class="result-card">
+      <div class="rc-user-bubble">
+        <span class="rc-user-label">English</span>
+        <span class="rc-user-word"></span>
+      </div>
+      <div class="rc-bot-bubble">
+        <div class="rc-bot-header">
+          <span class="rc-bot-label">Sourashtra</span>
+          <span class="rc-category-tag"></span>
+        </div>
+        <div class="rc-main-word"></div>
+        <div class="rc-script"></div>
+        <div class="rc-phonetic"></div>
+        <div class="rc-actions">
+          <button class="rc-speak-btn" aria-label="Hear pronunciation">
+            🔊 Hear Pronunciation
+          </button>
+          <button class="rc-copy-btn" aria-label="Copy word">
+            📋 Copy
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Word Card Template for grid -->
+  <template id="word-card-tpl">
+    <div class="word-card">
+      <div class="wc-english"></div>
+      <div class="wc-sourashtra"></div>
+      <div class="wc-category"></div>
+      <button class="wc-speak" aria-label="Speak">🔊</button>
+    </div>
+  </template>
+
+  <script src="dictionary.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
